@@ -2,7 +2,7 @@
 
 const db = require('./dbController.js');
 const http = require('node:http');
-const process = require('node:process');
+const concat = require('concat-stream');
 
 const server = http.createServer();
 const port = 3030;
@@ -27,15 +27,27 @@ server.on('request', (req, res) => {
       });
   }
   else if (method === 'GET' && url === '/') {
-      // base base
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end('hi!');
+    // base base
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('hi!');
+  }
+  else if (method === 'POST' && url === '/') {
+    // insert a new post
+    const concatStream = concat({encoding: 'string'}, body => {
+      console.log(body); // debug
+      db.insertPost(JSON.parse(body))
+        .then(result => {
+          res.writeHead(201, headers);
+          res.end(result);
+        })
+        .catch(err => {
+          res.writeHead(500, headers);
+          res.end(err);
+        });
+    });
+    req.pipe(concatStream);
   }
 });
 server.listen(port, () =>
     console.log(`Listening on http://localhost:${port}`)
 );
-
-function handle() {
-  console.log(`a kill command happened!`);
-}
