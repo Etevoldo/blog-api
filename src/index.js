@@ -31,7 +31,7 @@ server.on('request', (req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('hi!');
   }
-  else if (method === 'POST' && url === '/') {
+  else if (method === 'POST' && url === '/posts') {
     // insert a new post
     const concatStream = concat({encoding: 'string'}, body => {
       console.log(body); // debug
