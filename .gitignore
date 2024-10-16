@@ -1,4 +1,4 @@
-// mongodb credentials
+# mongodb credentials
 src/credentials.js
-// node modules
+# node modules
 /node_modules
