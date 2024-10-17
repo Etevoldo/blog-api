@@ -16,15 +16,20 @@ async function getPost(id) {
 
     if (id) {
       query._id = id;
-      return JSON.stringify(await collection.findOne(query, options));
+      const post = await collection.findOne(query, options);
+
+      if (post === null) {
+        return {code: 404, body: `Can't find post with id: ${id}`};
+      }
+
+      return {code: 200, body: JSON.stringify(post)};
     }
 
     const cursor = collection.find(query, options);
     const data = [];
-    for await (const doc of cursor) {
-      data.push(doc);
-    }
-    return JSON.stringify(data);
+    for await (const doc of cursor) data.push(doc);
+
+    return {code: 200, body: JSON.stringify(data)};
   } finally {
     await client.close();
   }
@@ -35,8 +40,8 @@ async function getPost(id) {
  * throw a error code in case the object is bad or insertion failed */
 async function insertPost(postToInsert) {
   try {
-    // throw `400 Bad Request` on a bad post ()
-    if (!isValidPost(postToInsert)) throw {code: 400, body: formatTemplate};
+    // throw `400 Bad Request` on a bad post
+    if (!isValidPost(postToInsert)) return {code: 400, body: formatTemplate};
 
     await client.connect();
     const db = client.db('blog');
@@ -56,8 +61,7 @@ async function insertPost(postToInsert) {
     const result = await collection.insertOne(formatedPost);
 
     if (!result.acknowledged) throw "Can't insert";
-
-    return JSON.stringify(formatedPost);
+    return {code: 201, body: JSON.stringify(formatedPost)};
 
   } finally {
     await client.close();

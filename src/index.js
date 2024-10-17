@@ -9,17 +9,18 @@ const port = 3030;
 
 server.on('request', (req, res) => {
   const { method, url } = req;
-  const headers = {
-    'Content-Type': 'application/json'
-  };
+  const headers = { 'Content-Type': 'application/json' };
   const uriPaths = url.split('/');
+
+  // requests handling
   if (method === 'GET' && uriPaths[1] === 'posts') {
     // get either all or an specific post
     const id = parseInt(uriPaths[2]); // /posts/:id
     db.getPost(id)
-      .then(data => {
-        res.writeHead(200, headers);
-        res.end(data);
+      .then(result => {
+        if (result.code !== 200) headers['Content-Type'] = 'text/plain';
+        res.writeHead(result.code, headers);
+        res.end(result.body);
       })
       .catch(err => {
         res.writeHead(500, headers);
@@ -35,14 +36,16 @@ server.on('request', (req, res) => {
     // insert a new post
     const concatStream = concat({encoding: 'string'}, body => {
       console.log(body); // debug
+
       db.insertPost(JSON.parse(body))
         .then(result => {
-          res.writeHead(201, headers);
-          res.end(result);
+          if (result.code !== 201) headers['Content-Type'] = 'text/plain';
+          res.writeHead(result.code, headers);
+          res.end(result.body);
         })
         .catch(err => {
-          res.writeHead(err.code, {'Content-Type': 'text/plain'});
-          res.end(err.body);
+          res.writeHead(500, {'Content-Type': 'text/plain'});
+          res.end(err);
         });
     });
     req.pipe(concatStream);
