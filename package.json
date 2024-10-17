@@ -4,7 +4,7 @@
   "description": "blog for roadmap-sh",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint src/index.js",
+    "lint": "eslint src/*",
     "start": "node src/index.js",
     "test": "nodemon -x \"npm run lint && npm start\""
   },
