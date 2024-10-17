@@ -12,11 +12,12 @@ async function getPost(id) {
     const collection = db.collection('posts');
 
     const query = { };
-    const options = {
-      sort: { id: 1},
-      projection: { _id: 0 }
+    const options = { sort: { _id: -1 }, };
+
+    if (id) {
+      query._id = id;
+      return JSON.stringify(await collection.findOne(query, options));
     }
-    if (id) query.id = id;
 
     const cursor = collection.find(query, options);
     const data = [];
@@ -40,12 +41,13 @@ async function insertPost(postToInsert) {
     const db = client.db('blog');
     const collection = db.collection('posts');
 
-    // id based on quantity, might change it later
-    const postsCount = await collection.countDocuments();
+    // id based on last post id (auto increment-like)
+    const options = { sort: { _id: -1 }, projection: { _id: 1 } };
+    const lastPost = await collection.findOne({}, options);
+
     const time = new Date().toJSON();
-    // add id to top
     const formatedPost = {
-      'id': postsCount + 1,
+      '_id': lastPost['_id'] + 1,
       ...postToInsert,
       'createdAt': time,
       'updatedAt': time
