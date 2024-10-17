@@ -68,6 +68,28 @@ async function insertPost(postToInsert) {
   }
 }
 
+async function deletePost(id) {
+  if (!id) return {code: 400, body: 'Specify an id to delete!'};
+
+  try {
+    await client.connect();
+    const db = client.db('blog');
+    const collection = db.collection('posts');
+
+    const query = { _id: id };
+    const result = await collection.deleteOne(query);
+
+    if (result.deletedCount !== 1) {
+      return {code: 404, body: `No post with "_id: ${id}" found to delete!`};
+    }
+    console.log(`Deleted post with "_id: ${id}" sucessfully`); //debug
+    return {code: 204, body: ''};
+
+  } finally {
+    await client.close();
+  }
+}
+
 //helper functions and constants
 const formatTemplate = `Incorrect post format, example:
 {
@@ -86,5 +108,4 @@ function isValidPost(post) {
   return true;
 }
 
-module.exports = { getPost, insertPost };
-
+module.exports = { getPost, insertPost, deletePost };

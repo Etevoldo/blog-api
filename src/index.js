@@ -50,6 +50,20 @@ server.on('request', (req, res) => {
     });
     req.pipe(concatStream);
   }
+  else if (method === 'DELETE' && uriPaths[1] === 'posts') {
+    // delete specific post
+    headers['Content-Type'] = 'text/plain';
+    const id = parseInt(uriPaths[2]); // /posts/:id
+    db.deletePost(id)
+      .then(result => {
+        res.writeHead(result.code, headers);
+        res.end(result.body);
+      })
+      .catch(err => {
+        res.writeHead(500, headers);
+        res.end(err);
+      });
+  }
 });
 server.listen(port, () =>
     console.log(`Listening on http://localhost:${port}`)
