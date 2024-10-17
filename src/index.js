@@ -41,8 +41,8 @@ server.on('request', (req, res) => {
           res.end(result);
         })
         .catch(err => {
-          res.writeHead(500, headers);
-          res.end(err);
+          res.writeHead(err.code, {'Content-Type': 'text/plain'});
+          res.end(err.body);
         });
     });
     req.pipe(concatStream);

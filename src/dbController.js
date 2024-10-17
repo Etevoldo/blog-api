@@ -35,8 +35,9 @@ async function getPost(id) {
  * throw a error code in case the object is bad or insertion failed */
 async function insertPost(postToInsert) {
   try {
-    //TODO: validate post to Insert before this step
-    // and throw `400 Bad Request` on a bad post
+    // throw `400 Bad Request` on a bad post ()
+    if (!isValidPost(postToInsert)) throw {code: 400, body: formatTemplate};
+
     await client.connect();
     const db = client.db('blog');
     const collection = db.collection('posts');
@@ -61,6 +62,24 @@ async function insertPost(postToInsert) {
   } finally {
     await client.close();
   }
+}
+
+//helper functions and constants
+const formatTemplate = `Incorrect post format, example:
+{
+"title": <string>,
+"content": <string>,
+"category": <string>,
+"tags": <array of strings>
+}
+`;
+function isValidPost(post) {
+  if ((typeof post.title)    !== 'string') return false;
+  if ((typeof post.content)  !== 'string') return false;
+  if ((typeof post.category) !== 'string') return false;
+  if ((typeof post.tags)     !== 'object') return false;
+
+  return true;
 }
 
 module.exports = { getPost, insertPost };
