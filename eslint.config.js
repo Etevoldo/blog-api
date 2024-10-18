@@ -6,8 +6,6 @@ module.exports = [
   js.configs.recommended,
   {
     rules: {
-      semi: "error",
-      "prefer-const": "warn",
       "no-unused-vars": "warn"
     },
     languageOptions: {
