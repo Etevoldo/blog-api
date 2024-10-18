@@ -27,11 +27,6 @@ server.on('request', (req, res) => {
         res.end(err);
       });
   }
-  else if (method === 'GET' && url === '/') {
-    // base base
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('hi!');
-  }
   else if (method === 'POST' && url === '/posts') {
     // insert a new post
     const concatStream = concat({encoding: 'string'}, body => {
@@ -63,6 +58,30 @@ server.on('request', (req, res) => {
         res.writeHead(500, headers);
         res.end(err);
       });
+  }
+  else if (method === 'PUT' && uriPaths[1] === 'posts') {
+    // delete specific post
+    headers['Content-Type'] = 'text/plain';
+    const concatStream = concat({encoding: 'string'}, body => {
+      console.log(body); // debug
+      const id = parseInt(uriPaths[2]); // /posts/:id
+      db.updatePost(JSON.parse(body), id)
+        .then(result => {
+          res.writeHead(result.code, headers);
+          res.end(result.body);
+        })
+        .catch(err => {
+          res.writeHead(500, headers);
+          console.error(err)
+          res.end();
+        });
+    });
+    req.pipe(concatStream);
+  }
+  else {
+    // pure base base
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('hi!');
   }
 });
 server.listen(port, () =>
