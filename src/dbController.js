@@ -90,6 +90,40 @@ async function deletePost(id) {
   }
 }
 
+async function updatePost(updatedPost, id) {
+  // throw `400 Bad Request` on a bad post format to update
+  if (!isValidPost(updatedPost)) return {code: 400, body: formatTemplate};
+  if (!id) return {code: 400, body: 'Specify an id to delete!'};
+
+  try {
+    await client.connect();
+    const db = client.db('blog');
+    const collection = db.collection('posts');
+
+    const filter = { "_id": id };
+    const replacementDoc = [{
+      $set: {
+       "title": updatedPost.title,
+       "content": updatedPost.content,
+       "category": updatedPost.category,
+       "tags": updatedPost.tags,
+       "updatedAt": "$$NOW"
+      }
+    }];
+    const result = await collection.updateOne(filter, replacementDoc);
+
+    if (!result.acknowledged) throw "Can't insert";
+    if (result.matchedCount < 1) {
+      return {code: 404, body: `Can't find document with id: ${id}`};
+    };
+
+    return {code: 200, body: `Updated post ${id} with sucess`};
+
+  } finally {
+    await client.close();
+  }
+}
+
 //helper functions and constants
 const formatTemplate = `Incorrect post format, example:
 {
@@ -108,4 +142,4 @@ function isValidPost(post) {
   return true;
 }
 
-module.exports = { getPost, insertPost, deletePost };
+module.exports = { getPost, insertPost, deletePost, updatePost };
