@@ -39,9 +39,9 @@ async function getPost(id) {
  * which is how the data was stored in the database.
  * throw a error code in case the object is bad or insertion failed */
 async function insertPost(postToInsert) {
-  try {
     // throw `400 Bad Request` on a bad post
     if (!isValidPost(postToInsert)) return {code: 400, body: formatTemplate};
+  try {
 
     await client.connect();
     const db = client.db('blog');
@@ -51,7 +51,7 @@ async function insertPost(postToInsert) {
     const options = { sort: { _id: -1 }, projection: { _id: 1 } };
     const lastPost = await collection.findOne({}, options);
 
-    const time = new Date().toJSON();
+    const time = new Date();//.toJSON();
     const formatedPost = {
       '_id': lastPost['_id'] + 1,
       ...postToInsert,
