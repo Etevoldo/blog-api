@@ -32,4 +32,6 @@ Progress:
 - [x] Get a single blog post
 - [x] Get all blog posts
 - [x] Filter blog posts by a search term
+
+
 Complete!
