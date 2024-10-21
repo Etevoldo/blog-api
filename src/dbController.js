@@ -5,24 +5,34 @@ const { MongoClient } = require('mongodb');
 
 const client = new MongoClient(connString);
 // query either all (no argument) or an specific post
-async function getPost(id) {
+async function getPost(search) {
   try {
     await client.connect();
     const db = client.db('blog');
     const collection = db.collection('posts');
 
-    const query = { };
-    const options = { sort: { _id: -1 }, };
+    let query = { };
+    const options = { sort: { _id: -1 } };
 
-    if (id) {
-      query._id = id;
+    if ((typeof search) === 'number') { // id search
+      query = { _id: search };
       const post = await collection.findOne(query, options);
 
       if (post === null) {
-        return {code: 404, body: `Can't find post with id: ${id}`};
+        return {code: 404, body: `Can't find post with id: ${search}`};
       }
 
       return {code: 200, body: JSON.stringify(post)};
+    }
+    else if ((typeof search) === 'string') { // wildcard search
+      const re = new RegExp(search);
+      query = {
+        $or: [
+          { title: { $regex: re }},
+          { content: { $regex: re }},
+          { category: { $regex: re }}
+        ]
+      };
     }
 
     const cursor = collection.find(query, options);

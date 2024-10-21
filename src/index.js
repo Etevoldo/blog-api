@@ -13,10 +13,18 @@ server.on('request', (req, res) => {
   const uriPaths = url.split('/');
 
   // requests handling
-  if (method === 'GET' && uriPaths[1] === 'posts') {
+  if (method === 'GET' && uriPaths[1].split('?')[0] === 'posts') {
     // get either all or an specific post
-    const id = parseInt(uriPaths[2]); // /posts/:id
-    db.getPost(id)
+    const params = new URLSearchParams(url.split('?')[1]);
+    let query;
+    if (params.has('term')) {
+      query = params.get('term'); // posts?term=word
+    }
+    else if (uriPaths[2]) {
+      query = parseInt(uriPaths[2]); // /posts/:id
+    }
+
+    db.getPost(query)
       .then(result => {
         if (result.code !== 200) headers['Content-Type'] = 'text/plain';
         res.writeHead(result.code, headers);
