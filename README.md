@@ -23,7 +23,13 @@ npm start
 
 ---
 
-TODO: wildcard search query:
-```console
-GET /posts?term=tech
-```
+Progress:
+
+
+- [x] Create a new blog post
+- [x] Update an existing blog post
+- [x] Delete an existing blog post
+- [x] Get a single blog post
+- [x] Get all blog posts
+- [x] Filter blog posts by a search term
+Complete!
