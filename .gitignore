@@ -2,3 +2,5 @@
 src/credentials.js
 # node modules
 /node_modules
+# test file
+test.js

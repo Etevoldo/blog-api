@@ -1,6 +1,6 @@
 # What is this
 
-Another [roadmap.sh](https://roadmap.sh/projects/blogging-platform-api) project, this one is a RESTful API, made with vanilla node HTTP functions, using mongoDB.
+Another [roadmap.sh](https://roadmap.sh/projects/blogging-platform-api) project, this one is a RESTful API, made with vanilla node HTTP functions, using mariaDB/mySQL.
 The instructions on how to use it are pretty much explained there
 
 # How to run
@@ -12,9 +12,12 @@ npm i
 ```
 3. assuming you already have a mongodb account, create a cluster and create a `credentials.js` file inside src directory with the following template:
 ```js
-const connString = `<your cluster-connection-string>`;
+const options = {
+  /*connection credentials*/
+  database: blog
+};
 
-module.exports = connString;
+module.exports = options;
 ```
 4. start the application
 ```console
