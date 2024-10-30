@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "concat-stream": "^2.0.0",
-    "mongodb": "^6.9.0"
+    "mariadb": "^3.4.0"
   }
 }
