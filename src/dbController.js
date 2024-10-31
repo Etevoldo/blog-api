@@ -30,8 +30,32 @@ async function getPost(search) {
     conn.end();
   }
 }
+async function insertPost(postToInsert) {
+  const conn = await mariadb.createConnection(options);
+  postToInsert.tags = postToInsert.tags.join(',');
+
+  try {
+    const query = `INSERT INTO posts (title, content, category, tags) \
+        VALUES ( \
+          "${postToInsert.title}    ", \
+          "${postToInsert.content}  ", \
+          "${postToInsert.category} ", \
+          "${postToInsert.tags}     "  \
+        );`;
+    const results = await conn.query(query);
+
+    const queryNewlyPost = 'SELECT * FROM posts WHERE ID = ?';
+    const newlyInsertedPost =
+        await conn.query(queryNewlyPost, [results.insertId] );
+
+    return {code: 201, body: JSON.stringify(newlyInsertedPost)};
+  } catch(err) {
+    console.error(err);
+  } finally {
+    conn.end();
+  }
+}
 //TODO:
-//async function insertPost(postToInsert) { }
 //async function deletePost(id) { }
 //async function updatePost(updatedPost, id) { }
 
@@ -53,4 +77,4 @@ function isValidPost(post) {
   return true;
 }
 
-module.exports = { getPost/*, insertPost, deletePost, updatePost */};
+module.exports = { getPost, insertPost/*, deletePost, updatePost */};
