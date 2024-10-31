@@ -20,8 +20,8 @@ async function getPost(search) {
 
     for (const result of results) {
       result.tags = result.tags.split(',');
-      result.createdAt = result.createdAt.toJSON()
-      result.updatedAt = result.updatedAt.toJSON()
+      result.createdAt = result.createdAt.toJSON();
+      result.updatedAt = result.updatedAt.toJSON();
     }
     return {code: 200, body: JSON.stringify(results)};
   } catch(err) {

@@ -80,7 +80,7 @@ server.on('request', (req, res) => {
         })
         .catch(err => {
           res.writeHead(500, headers);
-          console.error(err)
+          console.error(err);
           res.end();
         });
     });
