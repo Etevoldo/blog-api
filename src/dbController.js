@@ -10,12 +10,16 @@ async function getPost(search) {
     let query = `SELECT * FROM posts`;
 
     if ((typeof search) === 'number') query += ` WHERE id = ${search}`;
-    //TODO if ((typeof search) === 'string') query += regexstuff;
+    if ((typeof search) === 'string') {
+      query += ` WHERE content LIKE '%${search}%' OR \
+          category LIKE '%${search}%' OR \
+          tags     LIKE '%${search}%'`;
+    }
 
     const results = await conn.query(query);
+
     for (const result of results) {
       result.tags = result.tags.split(',');
-      result.category = category[result.category];
       result.createdAt = result.createdAt.toJSON()
       result.updatedAt = result.updatedAt.toJSON()
     }
@@ -48,6 +52,5 @@ function isValidPost(post) {
 
   return true;
 }
-const category = ['Technology', 'Botany', 'Food', 'Accesories'];
 
 module.exports = { getPost/*, insertPost, deletePost, updatePost */};
