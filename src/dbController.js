@@ -35,14 +35,17 @@ async function insertPost(postToInsert) {
   postToInsert.tags = postToInsert.tags.join(',');
 
   try {
-    const query = `INSERT INTO posts (title, content, category, tags) \
-        VALUES ( \
-          "${postToInsert.title}    ", \
-          "${postToInsert.content}  ", \
-          "${postToInsert.category} ", \
-          "${postToInsert.tags}     "  \
-        );`;
-    const results = await conn.query(query);
+    const query = `INSERT INTO posts \
+        (title, content, category, tags) \
+        VALUES ( ?, ?, ?, ? );`;
+    const values = [
+      postToInsert.title,
+      postToInsert.content,
+      postToInsert.category,
+      postToInsert.tags
+    ];
+
+    const results = await conn.query(query, values);
 
     const queryNewlyPost = 'SELECT * FROM posts WHERE ID = ?';
     const newlyInsertedPost =
