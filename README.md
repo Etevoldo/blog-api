@@ -6,20 +6,26 @@ The instructions on how to use it are pretty much explained there
 # How to run
 
 1. clone the repo
+
 2. install dependencies
+
 ```console
 npm i
 ```
-3. assuming you already have a mongodb account, create a cluster and create a `credentials.js` file inside src directory with the following template:
+3. [install XAMPP](https://www.apachefriends.org/download.html)
+
+4. import the table from the `dbExport.sql` file
+
+5. and create a `credentials.js` file inside src directory with the following template:
 ```js
 const options = {
   /*connection credentials*/
   database: blog
 };
-
 module.exports = options;
 ```
-4. start the application
+
+6. start the application
 ```console
 npm start
 ```
