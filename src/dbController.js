@@ -31,6 +31,7 @@ async function getPost(search) {
   }
 }
 async function insertPost(postToInsert) {
+  if (!isValidPost(postToInsert)) return {code: 400, body: formatTemplate};
   const conn = await mariadb.createConnection(options);
   postToInsert.tags = postToInsert.tags.join(',');
 
