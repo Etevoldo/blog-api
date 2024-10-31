@@ -78,8 +78,46 @@ async function deletePost(id) {
     conn.end();
   }
 }
-//TODO:
-//async function updatePost(updatedPost, id) { }
+async function updatePost(updatedPost, id) {
+  if (!isValidPost(updatedPost)) return {code: 400, body: formatTemplate};
+  if (!id) return {code: 400, body: 'Specify an ID to delete!'};
+
+  // join array into comma separated words (as in the db scheme)
+  updatedPost.tags = updatedPost.tags.join(', ');
+  const conn = await mariadb.createConnection(options);
+
+  try {
+    const query = `UPDATE posts SET \
+        title=    ?, \
+        content=  ?, \
+        category= ?, \
+        tags=     ?  \
+        WHERE id = ?`;
+    const values = [
+      updatedPost.title,
+      updatedPost.content,
+      updatedPost.category,
+      updatedPost.tags,
+      id
+    ];
+
+    const results = await conn.query(query, values);
+
+    if (results.affectedRows === 1) {
+      const queryEditedPost = 'SELECT * FROM posts WHERE ID = ?';
+      const editedPost =
+          await conn.query(queryEditedPost, [id]);
+
+      return {code: 200, body: JSON.stringify(editedPost)};
+    } else {
+      return {code: 404, body: ''};
+    }
+  } catch(err) {
+    console.error(err);
+  } finally {
+    conn.end();
+  }
+}
 
 //helper functions and constants
 const formatTemplate = `Incorrect post format, example:
@@ -99,4 +137,4 @@ function isValidPost(post) {
   return true;
 }
 
-module.exports = { getPost, insertPost, deletePost/*, updatePost */};
+module.exports = { getPost, insertPost, deletePost, updatePost };
