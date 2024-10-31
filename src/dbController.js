@@ -58,8 +58,26 @@ async function insertPost(postToInsert) {
     conn.end();
   }
 }
+async function deletePost(id) {
+  const conn = await mariadb.createConnection(options);
+
+  try {
+    const query = "DELETE FROM posts WHERE id = ?";
+
+    const results = await conn.query(query, [id]);
+
+    if (results.affectedRows === 1) {
+      return {code: 204, body: ''};
+    } else {
+      return {code: 404, body: ''};
+    }
+  } catch(err) {
+    console.error(err);
+  } finally {
+    conn.end();
+  }
+}
 //TODO:
-//async function deletePost(id) { }
 //async function updatePost(updatedPost, id) { }
 
 //helper functions and constants
@@ -80,4 +98,4 @@ function isValidPost(post) {
   return true;
 }
 
-module.exports = { getPost, insertPost/*, deletePost, updatePost */};
+module.exports = { getPost, insertPost, deletePost/*, updatePost */};
