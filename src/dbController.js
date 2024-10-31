@@ -23,7 +23,13 @@ async function getPost(search) {
       result.createdAt = result.createdAt.toJSON();
       result.updatedAt = result.updatedAt.toJSON();
     }
-    return {code: 200, body: JSON.stringify(results)};
+
+    if (results.length) { // found >0 results
+      return {code: 200, body: JSON.stringify(results)};
+    } else {
+      return {code: 404, body: ''};
+    }
+
   } catch(err) {
     console.error(err);
   } finally {
@@ -33,7 +39,7 @@ async function getPost(search) {
 async function insertPost(postToInsert) {
   if (!isValidPost(postToInsert)) return {code: 400, body: formatTemplate};
   const conn = await mariadb.createConnection(options);
-  postToInsert.tags = postToInsert.tags.join(',');
+  postToInsert.tags = postToInsert.tags.join(', ');
 
   try {
     const query = `INSERT INTO posts \
