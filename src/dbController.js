@@ -4,12 +4,11 @@ const connString = require('./credentials.js');
 const { MongoClient } = require('mongodb');
 
 const client = new MongoClient(connString);
+
 // query either all (no argument) or an specific post
 async function getPost(search) {
   try {
-    await client.connect();
-    const db = client.db('blog');
-    const collection = db.collection('posts');
+    const collection = await connectCollection('posts');
 
     let query = { };
     const options = { sort: { _id: -1 } };
@@ -52,10 +51,7 @@ async function insertPost(postToInsert) {
     // throw `400 Bad Request` on a bad post
     if (!isValidPost(postToInsert)) return {code: 400, body: formatTemplate};
   try {
-
-    await client.connect();
-    const db = client.db('blog');
-    const collection = db.collection('posts');
+    const collection = await connectCollection('posts');
 
     // id based on last post id (auto increment-like)
     const options = { sort: { _id: -1 }, projection: { _id: 1 } };
@@ -82,9 +78,7 @@ async function deletePost(id) {
   if (!id) return {code: 400, body: 'Specify an id to delete!'};
 
   try {
-    await client.connect();
-    const db = client.db('blog');
-    const collection = db.collection('posts');
+    const collection = await connectCollection('posts');
 
     const query = { _id: id };
     const result = await collection.deleteOne(query);
@@ -92,7 +86,7 @@ async function deletePost(id) {
     if (result.deletedCount !== 1) {
       return {code: 404, body: `No post with "_id: ${id}" found to delete!`};
     }
-    console.log(`Deleted post with "_id: ${id}" sucessfully`); //debug
+    console.log(`Deleted post with "_id: ${id}" successfully`); //debug
     return {code: 204, body: ''};
 
   } finally {
@@ -106,9 +100,7 @@ async function updatePost(updatedPost, id) {
   if (!id) return {code: 400, body: 'Specify an id to delete!'};
 
   try {
-    await client.connect();
-    const db = client.db('blog');
-    const collection = db.collection('posts');
+    const collection = await connectCollection('posts');
 
     const filter = { "_id": id };
     const replacementDoc = [{
@@ -127,11 +119,17 @@ async function updatePost(updatedPost, id) {
       return {code: 404, body: `Can't find document with id: ${id}`};
     };
 
-    return {code: 200, body: `Updated post ${id} with sucess`};
+    return {code: 200, body: `Updated post ${id} with success`};
 
   } finally {
     await client.close();
   }
+}
+async function connectCollection(collectionName) {
+    await client.connect();
+    const db = client.db('blog');
+    const collection =  db.collection(collectionName);
+    return collection;
 }
 
 //helper functions and constants
