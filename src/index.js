@@ -32,7 +32,8 @@ server.on('request', (req, res) => {
       })
       .catch(err => {
         res.writeHead(500, headers);
-        res.end(err);
+        console.error(err);
+        res.end('Internal server error');
       });
   }
   else if (method === 'POST' && url === '/posts') {
@@ -48,7 +49,8 @@ server.on('request', (req, res) => {
         })
         .catch(err => {
           res.writeHead(500, {'Content-Type': 'text/plain'});
-          res.end(err);
+          console.error(err);
+          res.end('Internal server error');
         });
     });
     req.pipe(concatStream);
@@ -64,7 +66,8 @@ server.on('request', (req, res) => {
       })
       .catch(err => {
         res.writeHead(500, headers);
-        res.end(err);
+        console.error(err);
+        res.end('Internal server error');
       });
   }
   else if (method === 'PUT' && uriPaths[1] === 'posts') {
@@ -81,7 +84,7 @@ server.on('request', (req, res) => {
         .catch(err => {
           res.writeHead(500, headers);
           console.error(err);
-          res.end();
+          res.end('Internal server error');
         });
     });
     req.pipe(concatStream);
